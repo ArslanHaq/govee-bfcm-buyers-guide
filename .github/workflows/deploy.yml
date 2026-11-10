@@ -1,9 +1,16 @@
 name: Deploy to ECS (pro)
 
+# DISABLED. Hosting is on Vercel for now, and the AWS resources this targets
+# (ECR repo `govee-bfcm-buyers-guide`, ECS service
+# `pro-govee-bfcm-buyers-guide`) do not exist yet, so it would fail on every
+# push. Manual-only until that changes.
+#
+# To re-enable, restore:
+#   on:
+#     push:
+#       branches: [main]
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   AWS_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}

@@ -1,0 +1,29 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      # Fails if a config file has been tampered with — see docs/SECURITY.md.
+      - run: npm run check:integrity
+
+      # Fails if any asset exceeds 200KB or public/ exceeds 2MB.
+      - run: npm run check:assets
+
+      # Fails if the 11 decision paths stop matching the brief.
+      - run: npm run check:tree
+
+      - run: npx tsc --noEmit
+      - run: npm run build
