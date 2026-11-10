@@ -1,0 +1,34 @@
+{
+  "name": "govee-bfcm-buyers-guide",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "npm run --silent guard && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "check:assets": "node scripts/check-assets.mjs",
+    "check:integrity": "node scripts/check-integrity.mjs",
+    "check:tree": "node scripts/check-tree.mjs",
+    "check": "npm run check:integrity && npm run check:assets && npm run check:tree && npx tsc --noEmit",
+    "assets": "npm run --silent guard && node scripts/process-assets.mjs && npm run check:assets",
+    "guard": "node scripts/guard-dev-server.mjs"
+  },
+  "dependencies": {
+    "framer-motion": "^12.18.1",
+    "next": "^15.4.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15.4.6",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

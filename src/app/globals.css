@@ -1,0 +1,775 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------- fonts */
+@font-face {
+  font-family: "Gotham";
+  src: url("/fonts/gotham-book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gotham";
+  src: url("/fonts/gotham-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gotham";
+  src: url("/fonts/gotham-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ----------------------------------------------------------------- base */
+:root {
+  --frame-w: 390;
+  --frame-h: 720;
+  /* Uniform scale that fits the 390x720 design canvas into the viewport.
+     Set as a unitless number by <StageScale/> — CSS cannot divide two lengths
+     into the <number> that scale() requires. 1 is the pre-hydration default.
+     Everything inside the stage is authored in literal design pixels, which
+     is what keeps the build pixel-identical to Figma at any size. */
+  --s: 1;
+  --border: #372a37;
+  --field: #fdf1e6;
+  --text: #f8f8f8;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: "Gotham", Arial, Helvetica, sans-serif;
+  /* Gotham's stylistic sets, as specified on the Figma text nodes. */
+  font-feature-settings: "cv10" 1, "ss03" 1, "ss05" 1, "case" 1, "ordn" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------- stage */
+/* The background bleeds to the full viewport; the stage holds the design. */
+.screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.screen {
+  background: var(--edge-bottom, #000);
+}
+
+/* Covers the whole viewport so there is no letterbox on taller phones. The
+   grid is decorative texture and the UI sits on an opaque card, so it does
+   not need to register with the content. */
+.screen-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  display: block;
+}
+
+/* z-index only — these children are already absolutely positioned, and
+   forcing position:relative here would drop them into normal flow. */
+.stage > *:not(.screen-bg) {
+  z-index: 1;
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(var(--frame-w) * 1px);
+  height: calc(var(--frame-h) * 1px);
+  /* Anchored to the TOP, not centred. Centring split the leftover height
+     into equal bands above and below, so on a tall phone the composition
+     started ~60px down. Scaling from `top center` keeps the artwork
+     identical from the top on every screen and lets all the slack fall
+     below the buttons, where the background simply continues. */
+  margin-left: calc(var(--frame-w) * -0.5px);
+  transform: scale(var(--s));
+  transform-origin: top center;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------- chrome parts */
+.govee-logo {
+  position: absolute;
+  left: 153px;
+  top: 24px;
+  width: 84px;
+  height: 47px;
+}
+
+.close-button {
+  position: absolute;
+  left: 22.9px;
+  top: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5.048px;
+  background: var(--field);
+  border: 1.01px solid var(--border);
+  box-shadow: -4.038px 3.029px 0 #000;
+  color: var(--border);
+  cursor: pointer;
+}
+.close-button svg {
+  width: 14.148px;
+  height: 14.145px;
+  display: block;
+}
+
+/* --------------------------------------------------------- retro window */
+.retro-window {
+  position: absolute;
+  left: 16px;
+  top: 76.97px;
+  width: 358px;
+  height: 534.53px; /* chrome top -> body bottom */
+  color: var(--border);
+}
+.retro-window > svg {
+  position: absolute;
+  left: 0;
+  display: block;
+}
+.rw-body {
+  top: 50.18px; /* 127.15 - 76.97 */
+  width: 358px;
+  height: 484.353px;
+}
+.rw-chrome {
+  top: 0;
+  width: 358px;
+  height: 83.2325px;
+}
+.rw-foot {
+  top: 505.44px; /* 582.41 - 76.97 */
+  width: 358px;
+  height: 28.0784px;
+}
+
+/* Nav row sits over the chrome. Offsets are frame-absolute minus window origin. */
+.rw-nav {
+  position: absolute;
+  inset: 0;
+  color: var(--border);
+}
+.rw-nav .nav-prev,
+.rw-nav .nav-next {
+  position: absolute;
+  top: 57.13px; /* 134.1 - 76.97 */
+  width: 10.763px;
+  height: 15.41px;
+}
+.rw-nav .nav-prev {
+  left: 14.7px;
+}
+.rw-nav .nav-next {
+  left: 41px;
+}
+.rw-nav .nav-search {
+  position: absolute;
+  left: 63.6px;
+  top: 52.63px;
+  width: 20.843px;
+  height: 21.01px;
+}
+.rw-nav .nav-address {
+  position: absolute;
+  left: 97.6px;
+  top: 51.13px;
+  width: 252.084px;
+  height: 24.778px;
+}
+.rw-nav .nav-square {
+  position: absolute;
+  top: 11.73px; /* 88.7 - 76.97 */
+  width: 26.02px;
+  height: 26.605px;
+}
+
+.rw-content {
+  position: absolute;
+  left: 20px; /* frame x36 - window x16 */
+  top: 113.58px; /* frame y190.55 - window y76.97 */
+  width: 318px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------- question */
+.q-label {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14.4px; /* Figma leading:normal = 1.2 on Gotham */
+  margin: 0 0 8px;
+}
+.q-text {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 28.8px; /* 1.2 */
+  margin: 0;
+  width: 318px; /* full content width; the break is explicit per question */
+  overflow-wrap: anywhere;
+}
+
+.answer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 58px;
+  padding-right: 10px;
+  border-radius: 6px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+.answer-letter {
+  width: 21px;
+  flex-shrink: 0;
+  font-weight: 500;
+  font-size: 16px;
+}
+.answer-text {
+  flex: 1 0 0;
+  min-width: 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: normal;
+}
+.answer-box {
+  position: relative;
+  flex-shrink: 0;
+  width: 23px;
+  height: 23px;
+  border: 2px solid var(--text);
+  border-radius: 3px;
+  color: var(--text);
+}
+.answer-box > span {
+  position: absolute;
+  inset: -2px; /* the 23px glyph overlays the full box, border included */
+  display: block;
+}
+.answer-box svg {
+  width: 23px;
+  height: 23px;
+  display: block;
+}
+.answer-divider {
+  height: 0;
+  width: 100%;
+  border: 0;
+  margin: 0;
+  position: relative;
+}
+.answer-divider::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.5px;
+  height: 1px;
+  background: currentColor;
+  /* Full opacity: measured in the frame the rule's centre row is #F8F8F8
+     outright, with only antialiasing either side. */
+}
+
+/* -------------------------------------------------------------- buttons */
+.btn-row {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 38px; /* render: button box 627..681, so 720-682 */
+  display: flex;
+  justify-content: space-between;
+}
+.btn-row.single {
+  justify-content: center;
+}
+
+.retro-btn {
+  padding: 18px 50px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: -5px 6px 0 #000;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 17px; /* render measures the button at 53 tall: 18 + 17 + 18 */
+  white-space: nowrap;
+  cursor: pointer;
+}
+/* The press is driven by framer-motion (spring back), not CSS — a CSS
+   :active transform here would fight it. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ---------------------------------------------------------- quit dialog */
+.quit-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  /* Sampled from the design: the screen behind multiplies to ~0.53. */
+  background: rgba(0, 0, 0, 0.47);
+}
+.quit-dialog {
+  position: absolute;
+  left: 28px;
+  top: 240px;
+  width: 334px;
+  border: 1px solid var(--border);
+  box-shadow: -5px 6px 0 #000;
+  overflow: hidden;
+}
+.quit-titlebar {
+  height: 24px;
+  background: #63b6d4;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  padding-right: 6px;
+  color: var(--border);
+}
+.quit-square {
+  width: 15px;
+  height: 15px;
+}
+.quit-body {
+  background: #fff;
+  padding: 26px 24px 22px;
+  text-align: center;
+  color: #1a1a1a;
+}
+.quit-heading {
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.25;
+  color: #373737; /* measured */
+}
+.quit-sub {
+  margin: 0 0 22px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #828282; /* measured — considerably lighter than it looked */
+}
+.quit-actions {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+.quit-btn {
+  min-width: 123px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------- cover + result plates */
+/* These two screens are a single 2x frame export with a live button laid over
+   the one drawn into the artwork. */
+.result-screen,
+.cover-screen {
+  background: linear-gradient(
+    to bottom,
+    var(--edge-top, #2a2626),
+    var(--edge-bottom, #2a2626)
+  );
+}
+.result-plate {
+  position: absolute;
+  inset: 0;
+  width: calc(var(--frame-w) * 1px);
+  height: calc(var(--frame-h) * 1px);
+  z-index: 0;
+  display: block;
+}
+.result-cta {
+  position: absolute;
+  left: 67px;
+  bottom: 34px;
+  width: 256px;
+  height: 55px;
+  padding: 0;
+  /* colour comes from RESULTS[].ctaText — r4's teal fill carries light text
+     while the other five are dark, so it cannot be derived from luminance. */
+  text-align: center;
+  z-index: 1;
+}
+
+/* The result CTA is an anchor, so it needs the button's text treatment. */
+a.result-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* The cover's Start button is NOT at the question screens' 38px: measured
+   from the 2x plate it is top 616, i.e. a 49px bottom margin. */
+.cover-screen .btn-row {
+  bottom: 49px;
+}
+
+/* ------------------------------------------------- Q2 filler: player bar */
+/* Decorative bar filling the space the 3rd/4th answer would take on the
+   two-option screens. Controls centred at x195 with a 54px pitch, a 40px
+   play disc and a 314px track at x38.
+   Measured in the frames the disc sits at full accent with the track at
+   0.34 and the fill at 0.63; these run darker by request, and the fill is
+   no longer nested inside the track (which was compounding the two
+   opacities down to 0.23). */
+.player {
+  position: absolute;
+  left: 2px; /* frame x38 - content x36 */
+  top: 302.45px; /* frame y493 - content y190.55 */
+  width: 314px;
+  color: var(--accent);
+}
+.player-controls {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  opacity: 1;
+}
+.player-skip {
+  width: 28px;
+  height: 20px;
+  flex: 0 0 auto;
+  display: block;
+}
+.player-play {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: block;
+}
+.player-track {
+  position: absolute;
+  top: 54px; /* frame y547 */
+  left: 0;
+  width: 314px;
+  height: 5px;
+  border-radius: 2.5px;
+  background: currentColor;
+  opacity: 0.16;
+}
+/* Sibling of the track, not a child — nesting multiplied the opacities. */
+.player-fill {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  width: 25%;
+  height: 5px;
+  border-radius: 2.5px;
+  background: currentColor;
+  opacity: 0.32;
+}
+
+/* ------------------------------------------------ morphing shell (Q flow) */
+/* Figma Smart Animate interpolates shared layers between frames. The shell
+   persists across questions, so the same effect comes from transitioning the
+   properties the theme drives. */
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.morphing .retro-window > svg path {
+  transition: fill 420ms cubic-bezier(0, 0, 0.2, 1);
+}
+.morphing .rw-nav svg path,
+.morphing .answer-box,
+.morphing .answer-divider::after {
+  transition: fill 420ms cubic-bezier(0, 0, 0.2, 1),
+    border-color 420ms cubic-bezier(0, 0, 0.2, 1),
+    background-color 420ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Button row: both slots always present, positioned so Next can travel. */
+.btn-row {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 38px;
+  height: 55px;
+}
+.btn-slot {
+  position: absolute;
+  top: 0;
+  transition: left 420ms cubic-bezier(0, 0, 0.2, 1),
+    opacity 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+.btn-slot.back {
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.btn-slot.back.shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* Centred on the first question, right-aligned once Back appears. */
+.btn-slot.next.alone {
+  left: 110px;
+}
+.btn-slot.next.paired {
+  left: 220px;
+}
+.morphing .retro-btn {
+  transition: background-color 420ms cubic-bezier(0, 0, 0.2, 1),
+    color 420ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* --------------------------------------------- cover + result art screens */
+.art-screen {
+  background: var(--edge-bottom, #2a2626);
+}
+/* The overlay is the frame's drawn layers minus the button, so it sits on the
+   exact 390x720 canvas while the background behind it covers the viewport. */
+.art-overlay {
+  position: absolute;
+  inset: 0;
+  width: calc(var(--frame-w) * 1px);
+  height: calc(var(--frame-h) * 1px);
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+}
+.art-actions {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Cover's Start button: measured at top 616 (49px bottom margin), centred. */
+.cover-cta {
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 49px;
+  display: flex;
+  justify-content: center;
+}
+
+/* While the frame export still has the button drawn into it, the press
+   translate would slide the live button off the baked one and show both. */
+.art-screen.baked .retro-btn:active {
+  transform: none;
+  box-shadow: -5px 6px 0 #000;
+}
+
+
+/* ----------------------------------------------------- layered artwork */
+.art-layer {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+}
+.result-cta-slot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  z-index: 2;
+}
+.result-screen .result-cta {
+  z-index: 2;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* A background that still contains the UI is pinned to the stage box so the
+   baked card lines up exactly with the live one. Costs a letterbox; removed
+   automatically once a background-only export replaces it. */
+.bg-framed .bg-layer {
+  left: 50%;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  width: calc(var(--frame-w) * 1px * var(--s));
+  height: calc(var(--frame-h) * 1px * var(--s));
+  transform: translate(-50%, -50%);
+}
+.bg-framed .screen-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* Cover sub-head — the one piece of the cover that is live text, not art.
+   Measured from the frame: two lines at y294-304 and y313-323, centred. */
+.cover-sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 291px;
+  margin: 0;
+  z-index: 2;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 19px;
+  text-align: center;
+  color: #fdfcea; /* measured: warm cream, not the #F8F8F8 used in-card */
+}
+
+/* The pixel cursor points AT the button, so it belongs above it. */
+.art-layer.cursor-layer {
+  z-index: 3;
+}
+
+/* ------------------------------------------------------ desktop hand-off */
+.dv {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  background:
+    radial-gradient(120% 90% at 20% 10%, #b8706d 0%, #8e2a26 45%, #6d1a1a 100%);
+  color: #fdfcea;
+}
+/* The perspective grid, drawn at roughly the size it has on a phone rather
+   than scaled up from a 390px-wide image. */
+.dv-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(to right, rgba(255, 248, 240, 0.5) 0 1px, transparent 1px 86px),
+    repeating-linear-gradient(to bottom, rgba(255, 248, 240, 0.5) 0 1px, transparent 1px 86px);
+  mask-image: radial-gradient(130% 100% at 30% 20%, #000 35%, transparent 100%);
+}
+.dv-inner {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vw, 96px);
+  padding: 56px 40px;
+  flex-wrap: wrap;
+}
+.dv-phone {
+  flex: 0 0 auto;
+  width: clamp(230px, 22vw, 310px);
+  aspect-ratio: 390 / 720;
+  border: 2px solid var(--border);
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: -12px 14px 0 rgba(0, 0, 0, 0.9);
+  background: #000;
+}
+.dv-phone img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.dv-copy {
+  flex: 0 1 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+.dv-logo {
+  width: clamp(92px, 7vw, 110px);
+  height: auto;
+}
+.dv-headline {
+  width: min(100%, 420px);
+  height: auto;
+}
+.dv-lead {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(19px, 1.6vw, 24px);
+  line-height: 1.25;
+  color: #fdfcea;
+}
+.dv-sub {
+  margin: 0;
+  max-width: 44ch;
+  font-weight: 400;
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.5;
+  color: #f3d9d4;
+}
+.dv-badges {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.dv-badges img {
+  height: auto;
+}
+.dv-badges img:first-child { width: 112px; }
+.dv-offer { width: clamp(150px, 15vw, 210px); }
+
+@media (max-width: 1000px) {
+  .dv-inner { flex-direction: column; text-align: center; }
+  .dv-copy { align-items: center; }
+  .dv-sub { text-align: center; }
+  .dv-badges { justify-content: center; }
+}

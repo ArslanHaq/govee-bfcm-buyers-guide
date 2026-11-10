@@ -1,0 +1,73 @@
+name: Deploy to ECS (pro)
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+  AWS_DEFAULT_REGION: us-east-1
+  # NOTE: these must be created in AWS before the first deploy.
+  ECR_REPOSITORY: govee-bfcm-buyers-guide
+  CLUSTER_NAME: frontend-pro
+  SERVICE_NAME: pro-govee-bfcm-buyers-guide
+  IMAGE_TAG: pro
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Guards added after an obfuscated dropper was found in the predecessor
+      # repo's config files. Both must pass before anything is built or shipped.
+      - name: Config integrity check
+        run: npm run check:integrity
+
+      - name: Asset budget check
+        run: npm run check:assets
+
+      - name: Decision tree matches the brief
+        run: npm run check:tree
+
+      - run: npx tsc --noEmit
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          role-session-name: github-${{ github.repository_owner }}-${{ github.run_id }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          role-duration-seconds: 900
+
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: ecr
+
+      - name: Build and push image
+        run: |
+          REG=${{ steps.ecr.outputs.registry }}
+          docker build -t $REG/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $REG/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+
+      - name: Force ECS redeployment
+        run: |
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --region $AWS_DEFAULT_REGION \
+            --service $SERVICE_NAME \
+            --force-new-deployment
