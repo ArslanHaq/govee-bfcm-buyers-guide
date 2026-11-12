@@ -20,6 +20,21 @@ const CI =
 
 if (CI) process.exit(0);
 
+/**
+ * Working directory of a process, or null if it cannot be read. Only a dev
+ * server started from THIS project shares its .next; one belonging to another
+ * project on the same machine is harmless and must not block the build.
+ */
+function cwdOf(pid) {
+  try {
+    const out = execSync(`lsof -a -p ${pid} -d cwd -Fn 2>/dev/null || true`, { encoding: "utf8" });
+    const line = out.split("\n").find((l) => l.startsWith("n"));
+    return line ? line.slice(1) : null;
+  } catch {
+    return null;
+  }
+}
+
 let running = "";
 try {
   // The bracket stops pgrep matching the shell that runs this very command:
@@ -29,6 +44,11 @@ try {
     .map((s) => s.trim())
     .filter(Boolean)
     .filter((pid) => Number(pid) !== process.pid && Number(pid) !== process.ppid)
+    // Unknown cwd counts as ours: better a false stop than a corrupted .next.
+    .filter((pid) => {
+      const cwd = cwdOf(pid);
+      return cwd === null || cwd === process.cwd();
+    })
     .join(", ");
 } catch {
   process.exit(0); // pgrep unavailable — nothing to check

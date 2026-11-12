@@ -22,13 +22,16 @@ import { QuitDialog } from "./QuitDialog";
  * derived arithmetically.
  */
 export function QuizEngine({
+  initialPath,
   onFinish,
   onExit,
 }: {
+  /** Question stack to start from; only the `?screen=` QA link sets it. */
+  initialPath?: QuestionId[];
   onFinish: (id: ResultId) => void;
   onExit: () => void;
 }) {
-  const [path, setPath] = useState<QuestionId[]>([FIRST_QUESTION]);
+  const [path, setPath] = useState<QuestionId[]>(initialPath ?? [FIRST_QUESTION]);
   const [answers, setAnswers] = useState<Partial<Record<QuestionId, OptionLetter>>>({});
   const [quitOpen, setQuitOpen] = useState(false);
 

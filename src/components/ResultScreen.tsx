@@ -7,6 +7,7 @@ import { RESULT_EDGES } from "@/lib/theme";
 import { ART_LAYERS } from "@/lib/art-layers";
 import { EASE_OUT, still } from "@/lib/motion";
 import { ArtLayerImg } from "./ArtLayer";
+import { useBrowserTint } from "./BrowserTint";
 
 /**
  * Result — Figma nodes 148:148 … 148:1144.
@@ -37,6 +38,7 @@ export function ResultScreen({ id }: { id: ResultId }) {
   const href = result.shopUrl ?? CAMPAIGN.shopUrl;
   const edge = RESULT_EDGES[id];
   const reduced = useReducedMotion();
+  useBrowserTint(edge);
 
   return (
     <div
@@ -63,8 +65,9 @@ export function ResultScreen({ id }: { id: ResultId }) {
         <Image className="govee-logo" src="/icons/govee.png" alt="Govee" width={84} height={47} priority />
 
         {/* One <img> per Figma layer, absolutely placed on the design canvas. */}
-        {layers.map((l) => (
-          <ArtLayerImg key={l.src} layer={l} delay={STAGGER[l.role] ?? 0.3} />
+        {/* Index in the key: one asset can be placed twice (r1's sparkle). */}
+        {layers.map((l, i) => (
+          <ArtLayerImg key={`${l.src}#${i}`} layer={l} delay={STAGGER[l.role] ?? 0.3} />
         ))}
 
         {/* The artwork is decorative; the page's meaning lives here. */}

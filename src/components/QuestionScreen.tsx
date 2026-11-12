@@ -12,6 +12,7 @@ import { AnswerList } from "./AnswerList";
 import { RetroButton } from "./RetroButton";
 import { PlayerWidget } from "./PlayerWidget";
 import { CloseX } from "./icons";
+import { useBrowserTint } from "./BrowserTint";
 
 /**
  * The question shell. One instance serves all six question screens.
@@ -43,6 +44,7 @@ export function QuestionScreen({
   canGoBack: boolean;
 }) {
   const reduced = useReducedMotion();
+  useBrowserTint(theme.edge);
   // A background that still has the UI drawn into it must track the stage.
   // Letting it cover the viewport scales it independently and you see the
   // baked card, logo and buttons drifting behind the live ones.

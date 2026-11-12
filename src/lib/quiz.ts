@@ -195,12 +195,15 @@ export const RESULTS: Record<ResultId, Result> = {
     id: "r4",
     index: 4,
     title: "The Indoor Mood Maker",
-    skus: ["H60B0"],
+    // Client update 12 Nov (Figma comments #24/#25 and the result #4 frame):
+    // "The Indoor Mood Maker – H16B0 Floor Lamp 3". Was H60B0, the Uplighter
+    // Floor Lamp, which r5 and r6 still recommend.
+    skus: ["H16B0"],
     bestFor: "Cozy rooms and holiday gatherings",
     description:
       "Create a warm, immersive atmosphere for memorable moments together.",
     cta: "Shop Lights",
-    products: ["Uplighter Floor Lamp"],
+    products: ["Govee Floor Lamp 3"],
     discount: "30%",
     plate: "/plates/r4.webp",
     ctaFill: "#507F77",
