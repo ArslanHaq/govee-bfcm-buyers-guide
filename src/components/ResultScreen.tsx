@@ -36,7 +36,9 @@ export function ResultScreen({ id }: { id: ResultId }) {
   const result = RESULTS[id];
   const layers = ART_LAYERS[id] ?? [];
   const href = result.shopUrl ?? CAMPAIGN.shopUrl;
-  const edge = RESULT_EDGES[id];
+  // r4b reuses r4's background; only its chip differs.
+  const art = result.art ?? id;
+  const edge = RESULT_EDGES[art];
   const reduced = useReducedMotion();
   useBrowserTint(edge);
 
@@ -50,7 +52,7 @@ export function ResultScreen({ id }: { id: ResultId }) {
     >
       <Image
         className="screen-bg"
-        src={`/bg/${id}.webp`}
+        src={`/bg/${art}.webp`}
         alt=""
         fill
         sizes="100vw"

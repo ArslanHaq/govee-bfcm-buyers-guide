@@ -23,7 +23,8 @@ service. Branching would have inherited all three. See `docs/SECURITY.md`.
 Cover → Q1 ─┬─ A Christmas Tree  → Q2A ─┬─ R1 Tree Showstopper
             │                           └─ R2 Festive Sparkle
             ├─ B Outdoor         → Q2B ──── R3 Home Showstopper (both options)
-            ├─ C Indoor          → Q2C ──── R4 Indoor Mood Maker (both options)
+            ├─ C Indoor          → Q2C ─┬─ A → R4  Indoor Mood Maker (Uplighter Floor Lamp)
+            │                           └─ B → R4b Indoor Mood Maker (Govee Floor Lamp 3)
             └─ D Multiple Spaces → Q2D ─┬─ A → R4 Indoor Mood Maker
                                         └─ B → Q3 ─┬─ A → R3 Home Showstopper
                                                    ├─ B → R4 Indoor Mood Maker
@@ -34,6 +35,11 @@ Cover → Q1 ─┬─ A Christmas Tree  → Q2A ─┬─ R1 Tree Showstopper
 Depth varies (2 or 3 questions), so `QuizEngine` walks a **path stack** rather
 than an index — Back pops the stack. `npm run check:tree` asserts all 11 paths
 against the brief; the R3/R4 convergence makes a typo invisible by eye.
+
+R4 has two versions on the same screen: R4 (Uplighter Floor Lamp, H60B0)
+for every R4 path except "A Cozy Little Upgrade", which gets R4b (Govee Floor
+Lamp 3, H16B0). Each result's Shop Lights link comes from the URL placed under
+its Figma frame; R5 and R6 have none yet and fall back to the Govee homepage.
 
 ## Architecture
 

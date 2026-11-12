@@ -22,7 +22,7 @@ try {
   const EXPECTED = {
     "A>A": "r1", "A>B": "r2",
     "B>A": "r3", "B>B": "r3",
-    "C>A": "r4", "C>B": "r4",
+    "C>A": "r4", "C>B": "r4b",
     "D>A": "r4",
     "D>B>A": "r3", "D>B>B": "r4", "D>B>C": "r5", "D>B>D": "r6",
   };
@@ -56,7 +56,7 @@ try {
   }
 
   if (bad) { console.error(`\nDecision tree check FAILED (${bad}).`); process.exit(1); }
-  console.log(`✓ decision tree: ${paths.length} paths match the brief, ${reached.size}/6 results reachable`);
+  console.log(`✓ decision tree: ${paths.length} paths match the brief, ${reached.size}/${Object.keys(RESULTS).length} results reachable`);
 } finally {
   rmSync(out, { recursive: true, force: true });
 }

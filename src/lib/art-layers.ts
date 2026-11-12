@@ -69,11 +69,24 @@ export const ART_LAYERS: Record<string, ArtLayer[]> = {
     { src: "/art/r4/The Indoor Mood Maker.svg", role: "headline", x: 71.75, y: 119.75, w: 247, h: 95 },
     { src: "/art/r4/desc.svg", role: "desc", x: 48.75, y: 265.25, w: 293, h: 34 },
     { src: "/art/r4/r4 1.webp", role: "product", x: 67, y: 311.5, w: 257, h: 284 },
-    // Client feedback 12 Nov: product is now Govee Floor Lamp 3. Chip and the
-    // left-facing sticker are cut from the 4x frame export (outlined text in
-    // Figma, so there is no editable source to re-export).
-    { src: "/art/r4/chip.webp", role: "chip", x: 230.75, y: 412.5, w: 123, h: 75 },
-    { src: "/art/r4/sticker.webp", role: "sticker", x: 12.5, y: 466.75, w: 109, h: 68.25 },
+    // Chip and left-facing sticker are cut from the 4x frame export: the text
+    // is outlined in Figma, so there is no editable source to re-export.
+    { src: "/art/r4/chip-uplighter.webp", role: "chip", x: 230.75, y: 412.5, w: 123, h: 75 },
+    { src: "/art/r4/sticker-uplighter.webp", role: "sticker", x: 12.5, y: 466.75, w: 109, h: 68.25 },
+    { src: "/art/r4/Group 10879100.svg", role: "decor", x: 279.5, y: 326.25, w: 75, h: 31 },
+    { src: "/art/r4/Cursor.svg", role: "cursor", x: 323.5, y: 185.75, w: 60, h: 73 },
+  ],
+  // Same screen as r4 with the Govee Floor Lamp 3 chip (frame 148:810).
+  r4b: [
+    { src: "/art/r4/Group 10879086.svg", role: "badge", x: 0, y: 47, w: 114, h: 141 },
+    { src: "/art/r4/Group 10879081.svg", role: "ribbon", x: 10, y: 93.75, w: 365, h: 146 },
+    { src: "/art/r4/The Indoor Mood Maker.svg", role: "headline", x: 71.75, y: 119.75, w: 247, h: 95 },
+    { src: "/art/r4/desc.svg", role: "desc", x: 48.75, y: 265.25, w: 293, h: 34 },
+    { src: "/art/r4/r4 1.webp", role: "product", x: 67, y: 311.5, w: 257, h: 284 },
+    // Chip and left-facing sticker are cut from the 4x frame export: the text
+    // is outlined in Figma, so there is no editable source to re-export.
+    { src: "/art/r4/chip-floor-lamp-3.webp", role: "chip", x: 230.75, y: 412.5, w: 123, h: 75 },
+    { src: "/art/r4/sticker-floor-lamp-3.webp", role: "sticker", x: 12.5, y: 466.75, w: 109, h: 68.25 },
     { src: "/art/r4/Group 10879100.svg", role: "decor", x: 279.5, y: 326.25, w: 75, h: 31 },
     { src: "/art/r4/Cursor.svg", role: "cursor", x: 323.5, y: 185.75, w: 60, h: 73 },
   ],
