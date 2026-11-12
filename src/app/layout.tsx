@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { StageScale } from "@/components/Stage";
+import { BrowserTintEdges } from "@/components/BrowserTint";
 
 export const metadata: Metadata = {
   title: "Build Your Perfect Holiday Setup | Govee",
@@ -13,7 +14,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#2A2626",
+  // The cover's top edge; each screen then updates it (useBrowserTint).
+  themeColor: "#B27273",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,6 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <StageScale />
+        {/* In the server HTML so the browser bars are right from first paint,
+            before the app hydrates. */}
+        <BrowserTintEdges />
         {children}
       </body>
     </html>

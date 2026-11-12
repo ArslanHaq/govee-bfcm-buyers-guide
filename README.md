@@ -75,30 +75,37 @@ Budget: no asset over 200 KB, `public/` under 2 MB, enforced by
 
 ### Assets
 
-All 13 screens use the real Figma artwork, delivered 2026-11-10.
-
-The cover and the six results carry no live state beyond one button, so each
-ships as a single 2x frame export with a real button laid over the one drawn
-into the artwork — the label stays live and the control stays a proper link.
-The question screens need live text and answer state, so their background is
-the full frame with our own card drawn over the baked one at identical
-coordinates.
+All 13 screens use the real Figma artwork. The cover and results are composed
+from individual layer exports (see `docs/ART-LAYERS.md`), with a live button
+on top. Result backgrounds carry Figma's image adjustments baked in, measured
+from 4x frame exports on 12 Nov.
 
 Exports are served exactly as authored (`unoptimized`): they are already
 780x1440 WebP, so routing them through the image optimizer would only add a
 second lossy pass.
 
-To replace any of them: drop the PNG into `public/plates` or `public/bg` and
-run `npm run assets`. Source PNGs are gitignored; only the WebP is committed.
+To replace a background: drop the PNG into `public/bg` and run
+`npm run assets`. Source PNGs are gitignored; only the WebP is committed.
 That script also clears `.next/cache/images`, which otherwise keeps serving
 the previous bytes for the same path.
 
-| Group | Files | Shipped size |
-| --- | --- | --- |
-| `plates/` cover + r1-r6 | 7 | 51-100 KB each |
-| `bg/` q1-q3 | 6 | 48-104 KB each |
-| fonts | 3 | 91 KB total |
-| **public/ total** | | **849 KB** |
+Asset filenames must be plain (letters, digits, spaces, `-`, `_`, `.`).
+`next start`, which the Docker image runs, answers 404 for a path containing a
+comma or apostrophe, even though Vercel serves it.
+
+### Browser bars
+
+Safari 26 colours its status bar and toolbar from the page, sampling a
+full-viewport `position: fixed` element once at load and never again. That
+froze the bars in the cover's colours for the whole quiz. Screens are
+therefore `position: absolute`, and `BrowserTint.tsx` publishes each screen's
+edge colours to two thin fixed edges, the page background and `theme-color`.
+Verified in the iOS 26.2 simulator.
+
+### QA link
+
+`?screen=cover|q1|q2a|q2b|q2c|q2d|q3|r1…r6` opens that screen directly, for
+reviewing one screen on a phone without tapping through the quiz.
 
 ## Motion
 

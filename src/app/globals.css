@@ -33,6 +33,10 @@
      Everything inside the stage is authored in literal design pixels, which
      is what keeps the build pixel-identical to Figma at any size. */
   --s: 1;
+  /* Browser-bar colours, set per screen by useBrowserTint. These defaults are
+     the cover's, so the bars are right before the app has hydrated. */
+  --tint-top: #b27273;
+  --tint-bottom: #d2b0a6;
   --border: #372a37;
   --field: #fdf1e6;
   --text: #f8f8f8;
@@ -49,7 +53,8 @@ body {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #000;
+  /* Safari 26 falls back to the page background for its bars. */
+  background-color: var(--tint-bottom);
   font-family: "Gotham", Arial, Helvetica, sans-serif;
   /* Gotham's stylistic sets, as specified on the Figma text nodes. */
   font-feature-settings: "cv10" 1, "ss03" 1, "ss05" 1, "case" 1, "ordn" 1;
@@ -57,11 +62,43 @@ body {
 }
 
 /* ---------------------------------------------------------------- stage */
-/* The background bleeds to the full viewport; the stage holds the design. */
+/* The background bleeds to the full viewport; the stage holds the design.
+   Absolute, NOT fixed: Safari 26 samples a full-viewport fixed element once
+   at load and then never re-reads it, which froze the browser bars in the
+   cover's colours for the whole quiz. html/body are 100% tall with overflow
+   hidden, so this covers exactly what `fixed` did. See BrowserTint.tsx. */
 .screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
   overflow: hidden;
+}
+
+/* The two edges the browser bars take their colour from. Solid colour for
+   Safari to read, masked so the artwork fades into the bar with no seam. */
+.browser-edge {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 20px;
+  z-index: 5;
+  pointer-events: none;
+  transition: background-color 420ms cubic-bezier(0, 0, 0.2, 1);
+}
+.browser-edge.top {
+  top: 0;
+  background-color: var(--tint-top);
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+  mask-image: linear-gradient(to bottom, #000, transparent);
+}
+.browser-edge.bottom {
+  bottom: 0;
+  background-color: var(--tint-bottom);
+  -webkit-mask-image: linear-gradient(to top, #000, transparent);
+  mask-image: linear-gradient(to top, #000, transparent);
+}
+/* The desktop hand-off has no phone bars to colour. */
+body:has(.dv) .browser-edge {
+  display: none;
 }
 
 .screen {
@@ -342,7 +379,9 @@ body {
 
 /* ---------------------------------------------------------- quit dialog */
 .quit-scrim {
-  position: fixed;
+  /* Absolute for the same reason as .screen: a full-viewport fixed layer
+     would freeze the browser bars. */
+  position: absolute;
   inset: 0;
   z-index: 10;
   /* Sampled from the design: the screen behind multiplies to ~0.53. */
@@ -625,6 +664,11 @@ a.result-cta {
 }
 .result-screen .result-cta {
   z-index: 2;
+}
+/* Measured on all six result frames: the logo sits 10px lower than on the
+   cover and questions (y34, not y24). Same x and size. */
+.result-screen .govee-logo {
+  top: 34px;
 }
 .sr-only {
   position: absolute;

@@ -7,6 +7,7 @@ import { THEMES } from "@/lib/theme";
 import { ART_LAYERS } from "@/lib/art-layers";
 import { EASE_OUT, still } from "@/lib/motion";
 import { ArtLayerImg } from "./ArtLayer";
+import { useBrowserTint } from "./BrowserTint";
 import { RetroButton } from "./RetroButton";
 
 /**
@@ -33,6 +34,7 @@ export function CoverScreen({ onStart }: { onStart: () => void }) {
   const theme = THEMES.cover;
   const layers = ART_LAYERS.cover ?? [];
   const reduced = useReducedMotion();
+  useBrowserTint(theme.edge);
 
   return (
     <div
