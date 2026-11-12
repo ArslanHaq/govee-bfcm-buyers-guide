@@ -10,7 +10,12 @@
  */
 
 export type QuestionId = "q1" | "q2a" | "q2b" | "q2c" | "q2d" | "q3";
-export type ResultId = "r1" | "r2" | "r3" | "r4" | "r5" | "r6";
+/**
+ * r4b is the second version of Result 4 (Govee Floor Lamp 3). Same screen,
+ * different product: the brief sends "A Cozy Little Upgrade" there and every
+ * other Result 4 path to the Uplighter Floor Lamp.
+ */
+export type ResultId = "r1" | "r2" | "r3" | "r4" | "r4b" | "r5" | "r6";
 export type OptionLetter = "A" | "B" | "C" | "D";
 
 /** Where answering an option leads: another question, or a result. */
@@ -83,7 +88,7 @@ export const QUESTIONS: Record<QuestionId, Question> = {
     lines: ["What kind of glow are", "you after?"],
     options: [
       { letter: "A", text: "Full Room Transformation", to: r("r4") },
-      { letter: "B", text: "A Cozy Little Upgrade", to: r("r4") },
+      { letter: "B", text: "A Cozy Little Upgrade", to: r("r4b") },
     ],
   },
   q2d: {
@@ -140,10 +145,16 @@ export interface Result {
    */
   ctaText: string;
   /**
-   * Destination for this result's button. Falls back to CAMPAIGN.shopUrl.
-   * Set these six once the client supplies per-product links.
+   * Destination for this result's button, from the links placed under each
+   * result frame in Figma (12 Nov). Falls back to CAMPAIGN.shopUrl where the
+   * file has none yet (r5, r6).
    */
   shopUrl?: string;
+  /**
+   * Result whose background and edge colours this one reuses. r4b is the same
+   * screen as r4 with a different product, so it has no artwork of its own.
+   */
+  art?: ResultId;
 }
 
 export const RESULTS: Record<ResultId, Result> = {
@@ -159,6 +170,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Christmas String Lights 2"],
     discount: "30%",
     plate: "/plates/r1.webp",
+    shopUrl: "https://us.govee.com/products/christmas-string-lights-2",
     ctaFill: "#F9C0C7",
     ctaText: "#372A37",
   },
@@ -173,6 +185,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Cone Tree Lights"],
     discount: "31%",
     plate: "/plates/r2.webp",
+    shopUrl: "https://us.govee.com/products/govee-cone-tree-lights",
     ctaFill: "#F9C0C7",
     ctaText: "#372A37",
   },
@@ -188,6 +201,9 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Outdoor Lights Pro"],
     discount: "40%",
     plate: "/plates/r3.webp",
+    // As placed under the result #3 frame, although its chip says
+    // "Outdoor Lights Pro".
+    shopUrl: "https://us.govee.com/products/govee-rgbicww-led-permanent-outdoor-lights",
     ctaFill: "#ECA315",
     ctaText: "#372A37",
   },
@@ -195,9 +211,26 @@ export const RESULTS: Record<ResultId, Result> = {
     id: "r4",
     index: 4,
     title: "The Indoor Mood Maker",
-    // Client update 12 Nov (Figma comments #24/#25 and the result #4 frame):
-    // "The Indoor Mood Maker – H16B0 Floor Lamp 3". Was H60B0, the Uplighter
-    // Floor Lamp, which r5 and r6 still recommend.
+    // Figma frame 148:633. Reached from Full Room Transformation, A Few
+    // Favorite Spaces and Create the Perfect Indoor Atmosphere.
+    skus: ["H60B0"],
+    bestFor: "Cozy rooms and holiday gatherings",
+    description:
+      "Create a warm, immersive atmosphere for memorable moments together.",
+    cta: "Shop Lights",
+    products: ["Uplighter Floor Lamp"],
+    discount: "30%",
+    plate: "/plates/r4.webp",
+    shopUrl: "https://us.govee.com/products/govee-uplighter-floor-lamp",
+    ctaFill: "#507F77",
+    ctaText: "#F8F8F8",
+  },
+  r4b: {
+    id: "r4b",
+    index: 4,
+    title: "The Indoor Mood Maker",
+    // Figma frame 148:810. Client update 12 Nov: "A Cozy Little Upgrade" ->
+    // H16B0 Floor Lamp 3 (decision tree edit, comments #24/#25).
     skus: ["H16B0"],
     bestFor: "Cozy rooms and holiday gatherings",
     description:
@@ -206,6 +239,8 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Govee Floor Lamp 3"],
     discount: "30%",
     plate: "/plates/r4.webp",
+    shopUrl: "https://us.govee.com/products/govee-floor-lamp-3",
+    art: "r4",
     ctaFill: "#507F77",
     ctaText: "#F8F8F8",
   },
