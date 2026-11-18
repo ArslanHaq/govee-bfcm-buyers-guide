@@ -1,54 +1,80 @@
+"use client";
+
+import { useEffect } from "react";
 import Image from "next/image";
+import { CAMPAIGN } from "@/lib/quiz";
 
 /**
- * Shown above 768px. The design only exists at 390x720, so rather than
- * stretch it — which blew the background grid up to several times its
- * intended size and looked broken — the phone is shown as a phone: the real
- * cover inside a device frame, with the campaign's own type beside it.
+ * Shown above 768px — Figma "Desktop" frame (378:11, 1728x1117), client
+ * design 18 Nov: the quiz is phone-only, so desktop gets a hand-off page
+ * asking people to open it on their phone.
  *
- * The backdrop grid is drawn in CSS at the scale it has on mobile, so it
- * reads as the same world rather than a zoomed-in crop.
+ * The background is the frame's own image fill (covers the viewport). The
+ * window, "Starts Nov 19" sticker and offer burst are one layer cut from a 2x
+ * export against that fill: their type is outlined in Figma, so there is no
+ * live text to rebuild. The "Explore Govee" button is a real link laid
+ * exactly over the drawn one.
+ *
+ * Scale: the content uses the background's own cover scale, so at the design
+ * size the composition is exactly the frame; it only shrinks when the window
+ * is too small to show all of it (short laptop screens, portrait tablets).
  */
+const CANVAS = { w: 1728, h: 1117 };
+/** Everything that must stay on screen: logo, sticker, window, burst. */
+const SAFE = { left: 301.5, right: 1433, top: 73.5, bottom: 963 };
+
 export function DesktopViewMessage() {
+  useEffect(() => {
+    const apply = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const cover = Math.max(vw / CANVAS.w, vh / CANVAS.h);
+      const cx = CANVAS.w / 2;
+      const cy = CANVAS.h / 2;
+      const fitW = (vw / 2 - 24) / Math.max(cx - SAFE.left, SAFE.right - cx);
+      const fitH = (vh / 2 - 16) / Math.max(cy - SAFE.top, SAFE.bottom - cy);
+      document.documentElement.style.setProperty("--dvs", String(Math.min(cover, fitW, fitH)));
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, []);
+
   return (
     <main className="dv">
-      <div className="dv-grid" aria-hidden />
+      <Image className="dv-bg" src="/art/desktop/bg.webp" alt="" fill sizes="100vw" priority unoptimized />
 
-      <div className="dv-inner">
-        <div className="dv-phone">
-          <Image
-            src="/plates/cover.webp"
-            alt="Build Your Perfect Holiday Setup — the Govee holiday lighting guide"
-            width={390}
-            height={720}
-            priority
-            unoptimized
-          />
-        </div>
+      <div className="dv-stage">
+        <Image
+          className="dv-layer"
+          src="/art/desktop/logo.webp"
+          alt="Govee"
+          width={109}
+          height={29.5}
+          style={{ left: 809, top: 73.5 }}
+          priority
+          unoptimized
+        />
+        <Image
+          className="dv-layer"
+          src="/art/desktop/content.webp"
+          alt=""
+          width={1131.5}
+          height={673}
+          style={{ left: 301.5, top: 290 }}
+          priority
+          unoptimized
+        />
 
-        <div className="dv-copy">
-          <Image className="dv-logo" src="/icons/govee.png" alt="Govee" width={110} height={62} priority />
+        {/* The copy is drawn into the artwork; this is what it says. */}
+        <h1 className="sr-only">For the best experience, please visit this quiz on your mobile device</h1>
+        <p className="sr-only">
+          Try it on your phone to find your home personality. Starts {CAMPAIGN.startsDate}. Up to 40% off.
+        </p>
 
-          <Image
-            className="dv-headline"
-            src="/art/cover/headline.svg"
-            alt="Build Your Perfect Holiday Setup"
-            width={315}
-            height={91}
-            priority
-          />
-
-          <p className="dv-lead">This guide is built for your phone.</p>
-          <p className="dv-sub">
-            Scan or open it on mobile, answer 2–3 quick questions, and find the
-            holiday lighting that fits your home.
-          </p>
-
-          <div className="dv-badges">
-            <Image src="/art/cover/Group 10879108.svg" alt="Starts Nov 19" width={116} height={71} />
-            <Image src="/art/cover/Group 10879074.svg" alt="Up to 53% off" width={294} height={92} className="dv-offer" />
-          </div>
-        </div>
+        <a className="dv-explore" href={CAMPAIGN.shopUrl}>
+          <span className="sr-only">Explore Govee</span>
+        </a>
       </div>
     </main>
   );

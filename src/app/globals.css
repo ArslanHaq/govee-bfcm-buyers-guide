@@ -33,6 +33,8 @@
      Everything inside the stage is authored in literal design pixels, which
      is what keeps the build pixel-identical to Figma at any size. */
   --s: 1;
+  /* Width-only scale for the 390x1180 result pages, which scroll. */
+  --sw: 1;
   /* Browser-bar colours, set per screen by useBrowserTint. These defaults are
      the cover's, so the bars are right before the app has hydrated. */
   --tint-top: #b27273;
@@ -670,6 +672,86 @@ a.result-cta {
 .result-screen .govee-logo {
   top: 34px;
 }
+/* …except Result 1, whose frame keeps it at y24 like the questions
+   (measured on the 18 Nov frames; the other five are at y34). */
+.result-screen[data-result="r1"] .govee-logo {
+  top: 24px;
+}
+
+/* ------------------------------------------------------- result pages */
+/* Client design, 18 Nov: results are 390x1180 and scroll. The scroller is
+   the screen itself — html/body stay fixed so the Safari bar tinting keeps
+   working (BrowserTint.tsx) — and the page is scaled to the viewport width. */
+.result-screen {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+}
+.result-screen::-webkit-scrollbar {
+  display: none;
+}
+/* In-flow box that gives the scroller its height; the stage inside is
+   transformed, and transforms do not take up layout space. */
+.result-page {
+  position: relative;
+  width: 100%;
+  height: calc(1180px * var(--sw));
+  overflow: hidden;
+}
+.result-screen .stage {
+  height: 1180px;
+  transform: scale(var(--sw));
+}
+/* The background is part of the page here: it scrolls with the artwork. */
+.result-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 1180px;
+  display: block;
+}
+.result-screen .result-cta-slot {
+  top: 1079px;
+  bottom: auto;
+  height: 55px;
+}
+.result-screen .result-cta {
+  top: 0;
+  bottom: auto;
+  /* The label sat 1px high against the frames; this centres it 1px lower
+     inside the fixed 55px box. */
+  padding-top: 2px;
+}
+.photo-window-slot {
+  position: absolute;
+}
+.explore-link {
+  position: absolute;
+  z-index: 2;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+/* 18px of artwork is too small to hit; the target extends past it. */
+.explore-link::before {
+  content: "";
+  position: absolute;
+  inset: -14px -12px;
+}
+.explore-link img,
+.explore-link svg {
+  position: absolute;
+  display: block;
+}
+.explore-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 6px;
+  border-radius: 4px;
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -722,98 +804,51 @@ a.result-cta {
 }
 
 /* ------------------------------------------------------ desktop hand-off */
+/* Figma "Desktop" frame (1728x1117). See DesktopViewMessage.tsx. */
+:root {
+  --dvs: 1;
+}
 .dv {
   position: fixed;
   inset: 0;
-  overflow: auto;
-  background:
-    radial-gradient(120% 90% at 20% 10%, #b8706d 0%, #8e2a26 45%, #6d1a1a 100%);
-  color: #fdfcea;
-}
-/* The perspective grid, drawn at roughly the size it has on a phone rather
-   than scaled up from a 390px-wide image. */
-.dv-grid {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.5;
-  background-image:
-    repeating-linear-gradient(to right, rgba(255, 248, 240, 0.5) 0 1px, transparent 1px 86px),
-    repeating-linear-gradient(to bottom, rgba(255, 248, 240, 0.5) 0 1px, transparent 1px 86px);
-  mask-image: radial-gradient(130% 100% at 30% 20%, #000 35%, transparent 100%);
-}
-.dv-inner {
-  position: relative;
-  min-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(40px, 6vw, 96px);
-  padding: 56px 40px;
-  flex-wrap: wrap;
-}
-.dv-phone {
-  flex: 0 0 auto;
-  width: clamp(230px, 22vw, 310px);
-  aspect-ratio: 390 / 720;
-  border: 2px solid var(--border);
-  border-radius: 26px;
   overflow: hidden;
-  box-shadow: -12px 14px 0 rgba(0, 0, 0, 0.9);
-  background: #000;
+  background: #a85a5a;
 }
-.dv-phone img {
-  width: 100%;
-  height: 100%;
+.dv-bg {
   object-fit: cover;
+  object-position: center;
+}
+.dv-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1728px;
+  height: 1117px;
+  transform: translate(-50%, -50%) scale(var(--dvs));
+  transform-origin: center;
+}
+.dv-layer {
+  position: absolute;
   display: block;
 }
-.dv-copy {
-  flex: 0 1 460px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
+/* Laid exactly over the drawn button (outer edge 756,590.5 216x55), so at
+   rest the artwork is untouched; hover, press and focus are drawn on top. */
+.dv-explore {
+  position: absolute;
+  left: 756px;
+  top: 590.5px;
+  width: 216px;
+  height: 55px;
+  border-radius: 4px;
+  transition: background-color 160ms ease;
 }
-.dv-logo {
-  width: clamp(92px, 7vw, 110px);
-  height: auto;
+.dv-explore:hover {
+  background-color: rgba(255, 255, 255, 0.14);
 }
-.dv-headline {
-  width: min(100%, 420px);
-  height: auto;
+.dv-explore:active {
+  background-color: rgba(0, 0, 0, 0.12);
 }
-.dv-lead {
-  margin: 0;
-  font-weight: 500;
-  font-size: clamp(19px, 1.6vw, 24px);
-  line-height: 1.25;
-  color: #fdfcea;
-}
-.dv-sub {
-  margin: 0;
-  max-width: 44ch;
-  font-weight: 400;
-  font-size: clamp(14px, 1.05vw, 16px);
-  line-height: 1.5;
-  color: #f3d9d4;
-}
-.dv-badges {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  margin-top: 4px;
-  flex-wrap: wrap;
-}
-.dv-badges img {
-  height: auto;
-}
-.dv-badges img:first-child { width: 112px; }
-.dv-offer { width: clamp(150px, 15vw, 210px); }
-
-@media (max-width: 1000px) {
-  .dv-inner { flex-direction: column; text-align: center; }
-  .dv-copy { align-items: center; }
-  .dv-sub { text-align: center; }
-  .dv-badges { justify-content: center; }
+.dv-explore:focus-visible {
+  outline: 3px solid #fdfcea;
+  outline-offset: 5px;
 }

@@ -3,7 +3,9 @@
  * then reports what is still missing.
  *
  * Drop PNGs (any resolution) into public/plates and public/bg; this resizes
- * to 2x of the 390x720 canvas and writes the .webp beside them. Source PNGs
+ * to 2x of the 390x720 canvas and writes the .webp beside them. Result
+ * backgrounds (r1-r6) are instead cropped to the 390x1180 result page at the
+ * fill's own resolution. Source PNGs
  * are gitignored — only the WebP is committed, which is what keeps this repo
  * from repeating the predecessor's 571 MB history.
  */
@@ -15,6 +17,12 @@ import { join } from "node:path";
 const TARGET_W = 780;   // 2x of 390
 const TARGET_H = 1440;  // 2x of 720
 const QUALITY = 72;
+// Result backgrounds are stored at the fill's native size (see below), so
+// they can afford a little more quality and still come in under 100 KB.
+const RESULT_QUALITY = 78;
+// Left edge of each result's crop, in the 1200px fill, where the frame does
+// not centre it. r2's fill is offset in Figma; the rest are centred.
+const RESULT_CROP_X = { r2: 560 };
 
 const EXPECTED = {
   "public/bg": ["q1", "q2a", "q2b", "q2c", "q2d", "q3",
@@ -46,11 +54,28 @@ for (const [dir, names] of Object.entries(EXPECTED)) {
 
     if (png) {
       const src = join(dir, png);
-      // Square source fills (Figma exports the fill at its natural size) are
-      // cover-cropped exactly as Figma composites them into the frame.
-      await sharp(src)
-        .resize(TARGET_W, TARGET_H, { fit: "cover", position: "centre" })
-        .webp({ quality: QUALITY, effort: 6 })
+      const isResult = /^r\d$/.test(name);
+      let pipeline = sharp(src);
+      if (isResult) {
+        // Results are 390x1180 scrolling pages (client design, 18 Nov). The
+        // square fill is cropped to that shape at its own resolution: the
+        // fill is 1200px tall for 1180 design px, so upscaling here would add
+        // bytes and no detail. Most frames centre the fill; RESULT_CROP_X
+        // holds the ones Figma offsets ("Crop" mode), measured against the
+        // frame exports.
+        const { width: W, height: H } = await sharp(src).metadata();
+        const cw = Math.round((H * 390) / 1180);
+        const left = RESULT_CROP_X[name] != null
+          ? Math.round((RESULT_CROP_X[name] * W) / 1200)
+          : Math.round((W - cw) / 2);
+        pipeline = pipeline.extract({ left, top: 0, width: cw, height: H });
+      } else {
+        // Square source fills (Figma exports the fill at its natural size)
+        // are cover-cropped exactly as Figma composites them into the frame.
+        pipeline = pipeline.resize(TARGET_W, TARGET_H, { fit: "cover", position: "centre" });
+      }
+      await pipeline
+        .webp({ quality: isResult ? RESULT_QUALITY : QUALITY, effort: 6 })
         .toFile(webp + ".tmp");
       const { size } = await stat(webp + ".tmp");
       await unlink(webp).catch(() => {});

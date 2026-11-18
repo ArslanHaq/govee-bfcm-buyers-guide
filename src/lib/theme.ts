@@ -103,17 +103,8 @@ export const QUIT_DIALOG = {
   cancelFill: "#FFFFFF",
 } as const;
 
-/** Result screens sit on a near-black backdrop rather than a gradient. */
-/** Letterbox colours per result, sampled from each delivered plate. */
-export const RESULT_EDGES: Record<string, { top: string; bottom: string }> = {
-  r1: { top: "#322C2D", bottom: "#2B2828" },
-  r2: { top: "#4B6A55", bottom: "#57725F" },
-  r3: { top: "#70817E", bottom: "#577387" },
-  r4: { top: "#D19B98", bottom: "#CD9187" },
-  r5: { top: "#CFB47B", bottom: "#DFB47B" },
-  r6: { top: "#DCB6BB", bottom: "#D3A9C1" },
-};
-
+/** Result pages scroll, so their browser-bar colours follow the background
+ *  under the bars: see RESULT_TINT in result-tint.ts. */
 export const RESULT_THEME = {
   backdrop: "#2A2626",
   accent: "#F9C0C7",

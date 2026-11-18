@@ -15,6 +15,9 @@ export function useStageScale() {
     const apply = () => {
       const s = Math.min(window.innerWidth / 390, window.innerHeight / 720);
       document.documentElement.style.setProperty("--s", String(s));
+      // The result pages are 390x1180 and scroll, so they fit the WIDTH
+      // only; fitting the height as well would shrink them to a strip.
+      document.documentElement.style.setProperty("--sw", String(window.innerWidth / 390));
     };
     apply();
     window.addEventListener("resize", apply);

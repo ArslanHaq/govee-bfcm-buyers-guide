@@ -10,6 +10,38 @@ at once:
 | Height on tall phones | letterboxed — the image could not cover the viewport without the baked button drifting out of line | background covers, UI stays on the 390x720 canvas |
 | Motion | one flat picture, nothing could move separately | every layer animates on its own |
 
+## Result pages (18 Nov 2026)
+
+The client's final design made each result a 390x1180 page that scrolls, with
+a photo section under the match. Frames: result #1 427:1685, #2 427:1746,
+#3 427:1805, #4 427:1919 (Uplighter), #4b 427:2051 (Floor Lamp 3), #5 427:2183,
+#6 427:2297.
+
+* **Top half: same layers, re-located.** Every reused layer was rendered at 4x
+  and matched against a 4x export of the new frame. Most moved by 0-0.5px;
+  r1's product went up 3px, r2's plus up 8px, the cursors settled at
+  (322.5, 182.25) except r1 and r3, and r1's logo stays at y24 (the other five
+  are at y34).
+* **New "Best for" chip** where the old "Your Match" chip was, and **r1/r2
+  stickers** that changed shape or side: cut from the 4x frames.
+* **Below the fold:** "Explore Your Match" (the words are one white matte,
+  identical on every result; the arrow is Figma's 24px "Arrow down" vector so
+  it can bounce, which was added on request and is not in the design), lower decor (the same SVGs as the top; r5's smaller mirrored stars
+  are cut from the frame), the photo window (`PhotoWindow.tsx`, drawn from the
+  frame's own vector paths), the photo (the band between the window's bars,
+  from the 4x export, at 2x), and the "Your Match" chip.
+* **Backgrounds** are the same toned 1200px fills, cropped to 390:1180 at
+  their native size. r2's fill is offset in Figma ("Crop", x0 = 560 of 1200);
+  the rest are centred. `npm run assets` reproduces them.
+* A solid single-colour mark (r1's sparkle, r2's x and plus) is placed from
+  its exact outline against the known background, not by template matching:
+  matching puts it inside any larger patch of its colour (the tree-top burst,
+  the window's title bar).
+
+Verified by rendering each page at 390x1180 @2x and diffing against the 4x
+export: 3.5-7.5% of pixels differ by more than 24/255, nearly all of it text
+anti-aliasing and photo detail.
+
 ## How positions were derived
 
 The layer SVGs carry no coordinates, so every position is measured.
@@ -29,9 +61,8 @@ All of that is now taken from the frames.
   questions (`.result-screen .govee-logo`).
 * r1 has a second, identical sparkle. Figma's zip export merges same-named
   layers, so `Vector.svg` is placed twice.
-* r4's chip ("Govee Floor Lamp 3") and left-facing sticker, and r5's
-  three-line chip, are cut from the 4x frame export: the text is outlined in
-  Figma, so there is no editable source to re-export.
+* Chips are cut from the 4x frame export: the text is outlined in Figma, so
+  there is no editable source to re-export.
 
 **Cover.** Matched against its 390x720 render. The logo was set to its known
 x153 y24 from the Figma design context.
