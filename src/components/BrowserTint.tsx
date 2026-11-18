@@ -32,21 +32,59 @@ export function BrowserTintEdges() {
   );
 }
 
+function setTint(top: string, bottom: string) {
+  // html/body and both edges read these, so one write recolours all three.
+  const root = document.documentElement;
+  root.style.setProperty("--tint-top", top);
+  root.style.setProperty("--tint-bottom", bottom);
+
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "theme-color";
+    document.head.appendChild(meta);
+  }
+  if (meta.content !== top) meta.content = top;
+}
+
 /** Publishes the current screen's edge colours to the browser chrome. */
 export function useBrowserTint(edge: { top: string; bottom: string }) {
   const { top, bottom } = edge;
-  useEffect(() => {
-    // html/body and both edges read these, so one write recolours all three.
-    const root = document.documentElement;
-    root.style.setProperty("--tint-top", top);
-    root.style.setProperty("--tint-bottom", bottom);
+  useEffect(() => setTint(top, bottom), [top, bottom]);
+}
 
-    let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.name = "theme-color";
-      document.head.appendChild(meta);
-    }
-    meta.content = top;
-  }, [top, bottom]);
+/**
+ * For the scrolling result pages: the bars take the colour of the background
+ * that is actually under them, from samples taken every `step` design px
+ * down the page (src/lib/result-tint.ts). Updated once per frame while
+ * scrolling; the edges' own colour transition smooths the steps.
+ */
+export function useScrollTint(
+  ref: React.RefObject<HTMLElement | null>,
+  samples: string[],
+  step: number,
+) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || samples.length === 0) return;
+    const pick = (y: number) =>
+      samples[Math.max(0, Math.min(samples.length - 1, Math.round(y / step)))];
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const sw = el.clientWidth / 390 || 1;
+      setTint(pick(el.scrollTop / sw), pick((el.scrollTop + el.clientHeight) / sw));
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    apply();
+    el.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      el.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [ref, samples, step]);
 }

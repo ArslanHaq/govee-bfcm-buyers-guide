@@ -145,9 +145,12 @@ export interface Result {
    */
   ctaText: string;
   /**
-   * Destination for this result's button, from the links placed under each
-   * result frame in Figma (12 Nov). Falls back to CAMPAIGN.shopUrl where the
-   * file has none yet (r5, r6).
+   * Destination for this result's button: the Amazon links placed under each
+   * result frame in Figma ("final link", client, 18 Nov). Single-product
+   * results go to the product page; r5 and r6 recommend several products and
+   * go to a Govee store page on Amazon. The store links' per-session
+   * `visitId` is dropped: it identified whoever copied the link, not a page.
+   * Falls back to CAMPAIGN.shopUrl if a result ever has none.
    */
   shopUrl?: string;
   /**
@@ -170,7 +173,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Christmas String Lights 2"],
     discount: "30%",
     plate: "/plates/r1.webp",
-    shopUrl: "https://us.govee.com/products/christmas-string-lights-2",
+    shopUrl: "https://www.amazon.com/dp/B0D455QDR9?th=1",
     ctaFill: "#F9C0C7",
     ctaText: "#372A37",
   },
@@ -185,7 +188,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Cone Tree Lights"],
     discount: "31%",
     plate: "/plates/r2.webp",
-    shopUrl: "https://us.govee.com/products/govee-cone-tree-lights",
+    shopUrl: "https://www.amazon.com/dp/B0F8B4TZRB?plpRedirect=mhFallback&ref=clp_hp_h_pc&th=1",
     ctaFill: "#F9C0C7",
     ctaText: "#372A37",
   },
@@ -201,9 +204,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Outdoor Lights Pro"],
     discount: "40%",
     plate: "/plates/r3.webp",
-    // As placed under the result #3 frame, although its chip says
-    // "Outdoor Lights Pro".
-    shopUrl: "https://us.govee.com/products/govee-rgbicww-led-permanent-outdoor-lights",
+    shopUrl: "https://www.amazon.com/Govee-Permanent-Lighting-Waterproof-Assistant/dp/B0DX1WPB9J?ref_=pb_hm_dp&th=1",
     ctaFill: "#ECA315",
     ctaText: "#372A37",
   },
@@ -211,7 +212,7 @@ export const RESULTS: Record<ResultId, Result> = {
     id: "r4",
     index: 4,
     title: "The Indoor Mood Maker",
-    // Figma frame 148:633. Reached from Full Room Transformation, A Few
+    // Figma frame 427:1919 (was 148:633). Reached from Full Room Transformation, A Few
     // Favorite Spaces and Create the Perfect Indoor Atmosphere.
     skus: ["H60B0"],
     bestFor: "Cozy rooms and holiday gatherings",
@@ -221,7 +222,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Uplighter Floor Lamp"],
     discount: "30%",
     plate: "/plates/r4.webp",
-    shopUrl: "https://us.govee.com/products/govee-uplighter-floor-lamp",
+    shopUrl: "https://www.amazon.com/dp/B0F3NZ12GL",
     ctaFill: "#507F77",
     ctaText: "#F8F8F8",
   },
@@ -229,17 +230,17 @@ export const RESULTS: Record<ResultId, Result> = {
     id: "r4b",
     index: 4,
     title: "The Indoor Mood Maker",
-    // Figma frame 148:810. Client update 12 Nov: "A Cozy Little Upgrade" ->
+    // Figma frame 427:2051 (was 148:810). Client update 12 Nov: "A Cozy Little Upgrade" ->
     // H16B0 Floor Lamp 3 (decision tree edit, comments #24/#25).
     skus: ["H16B0"],
     bestFor: "Cozy rooms and holiday gatherings",
     description:
       "Create a warm, immersive atmosphere for memorable moments together.",
     cta: "Shop Lights",
-    products: ["Govee Floor Lamp 3"],
+    products: ["Floor Lamp 3"],
     discount: "30%",
     plate: "/plates/r4.webp",
-    shopUrl: "https://us.govee.com/products/govee-floor-lamp-3",
+    shopUrl: "https://www.amazon.com/dp/B0GQT4YJ5F",
     art: "r4",
     ctaFill: "#507F77",
     ctaText: "#F8F8F8",
@@ -256,6 +257,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Permanent Outdoor Lights", "Uplighter Floor Lamp"],
     discount: "40%",
     plate: "/plates/r5.webp",
+    shopUrl: "https://www.amazon.com/stores/page/0411FC3E-814E-420E-93F8-E37FBD58B407?ingress=0",
     ctaFill: "#8EB04F",
     ctaText: "#372A37",
   },
@@ -271,6 +273,7 @@ export const RESULTS: Record<ResultId, Result> = {
     products: ["Permanent Outdoor Lights", "Uplighter Floor Lamp", "String Lights 2"],
     discount: "40%",
     plate: "/plates/r6.webp",
+    shopUrl: "https://www.amazon.com/stores/page/EF0C2035-0FB6-456B-B9B0-831FC083D42A?ingress=0",
     ctaFill: "#BC9AF0",
     ctaText: "#372A37",
   },
@@ -288,7 +291,7 @@ export const CAMPAIGN = {
   shopUrl: process.env.NEXT_PUBLIC_SHOP_URL ?? "https://us.govee.com/",
   startsLabel: "STARTS",
   startsDate: "NOV 19",
-  discount: "UP TO 53% OFF",
+  discount: "UP TO 40% OFF",
   coverSubhead:
     "Not sure which lights are right for your home? We've got you!",
 } as const;

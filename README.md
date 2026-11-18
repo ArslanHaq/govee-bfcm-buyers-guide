@@ -1,14 +1,17 @@
 # Govee BFCM Interactive Buyer's Guide
 
-"Build Your Perfect Holiday Setup" — a mobile-only, 390×720 interactive buyer's
-guide in a retro Y2K / pixel aesthetic.
+"Build Your Perfect Holiday Setup" — a mobile-only interactive buyer's guide in
+a retro Y2K / pixel aesthetic. The cover and questions are a fixed 390×720
+screen; each result is a 390×1180 page that scrolls (client design, 18 Nov).
 
 **Figma:** [Govee BFCM Buyer's Guide](https://www.figma.com/design/2V4PdPDue3uOiqG6d9pleW/Govee-BFCM-Buyer-s-Guide?node-id=131-1486)
-(the `design` page is current; `quiz` is an earlier iteration).
+(the `final design` page is current; `quiz` is an earlier iteration).
 
-> **Launch date conflict — needs a decision.** The brief says *Launch Nov 13–14*
-> and *up to 42% off*; the cover design says **STARTS NOV 19** and **UP TO 53% OFF**.
-> The code follows the design. Both live in `CAMPAIGN` in `src/lib/quiz.ts`.
+> **Offer:** **UP TO 40% OFF** on the start screen and the desktop page
+> (decided 18 Nov; the designs had 53% and 42%). The figures were redrawn in
+> the artwork's own type: Gotham Bold on the start screen, the pixel face on
+> desktop. The start date is the design's **STARTS NOV 19** (the brief said
+> Nov 13–14). Both live in `CAMPAIGN` in `src/lib/quiz.ts`.
 
 ## Why this is a separate repo
 
@@ -37,9 +40,26 @@ than an index — Back pops the stack. `npm run check:tree` asserts all 11 paths
 against the brief; the R3/R4 convergence makes a typo invisible by eye.
 
 R4 has two versions on the same screen: R4 (Uplighter Floor Lamp, H60B0)
-for every R4 path except "A Cozy Little Upgrade", which gets R4b (Govee Floor
-Lamp 3, H16B0). Each result's Shop Lights link comes from the URL placed under
-its Figma frame; R5 and R6 have none yet and fall back to the Govee homepage.
+for every R4 path except "A Cozy Little Upgrade", which gets R4b (Floor
+Lamp 3, H16B0). Each result's Shop Lights link is the Amazon URL placed under
+its Figma frame (client, 18 Nov): product pages for R1–R4b, Govee store pages
+for R5 and R6, which recommend several products.
+
+### Result pages
+
+Below the match, each result has "Explore Your Match ↓" (scrolls to the
+photo), a photo of the lights in a real room inside a browser window, a
+"Your Match" chip naming the product, then Shop Lights. The page is scaled to
+the screen width (`--sw`) and scrolls inside `.result-screen`; html/body stay
+fixed so the browser-bar tinting keeps working. The window frame is drawn by
+`PhotoWindow.tsx` from Figma's own paths, in each result's accent colour.
+
+### Desktop
+
+Above 768px the quiz shows the Figma "Desktop" frame: a hand-off page asking
+people to open the quiz on their phone, with an "Explore Govee" link
+(`CAMPAIGN.shopUrl`). It keeps the design's composition at any window size and
+only shrinks when the window is too small to show all of it.
 
 ## Architecture
 
@@ -106,12 +126,15 @@ full-viewport `position: fixed` element once at load and never again. That
 froze the bars in the cover's colours for the whole quiz. Screens are
 therefore `position: absolute`, and `BrowserTint.tsx` publishes each screen's
 edge colours to two thin fixed edges, the page background and `theme-color`.
-Verified in the iOS 26.2 simulator.
+Verified in the iOS 26.2 simulator. The result pages scroll, so there the
+bars follow the background under them, from colours sampled every 20 design
+px down each page (`src/lib/result-tint.ts`).
 
 ### QA link
 
-`?screen=cover|q1|q2a|q2b|q2c|q2d|q3|r1…r6` opens that screen directly, for
+`?screen=cover|q1|q2a|q2b|q2c|q2d|q3|r1…r6|r4b` opens that screen directly, for
 reviewing one screen on a phone without tapping through the quiz.
+`?view=desktop` shows the desktop page at any width.
 
 ## Motion
 
@@ -139,4 +162,4 @@ npm run build
 
 - **No email capture.** The design goes result → "Shop Lights"; no `/user-form`
   or Klaviyo step was carried over.
-- **Mobile only**, matching the 390×720 design.
+- **Mobile only.** Desktop gets the design's hand-off page instead of the quiz.

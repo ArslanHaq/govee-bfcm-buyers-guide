@@ -18,9 +18,15 @@ export function ArtLayerImg({
   layer,
   delay,
   animateCursor = false,
+  inView = false,
 }: {
   layer: Layer;
   delay: number;
+  /**
+   * Below the fold on the scrolling result pages: reveal when the layer
+   * scrolls into view instead of at load, when nobody would see it.
+   */
+  inView?: boolean;
   /**
    * Only the cover nudges its cursor: there it sits beside the Start button
    * and reads as "press this". On the results the cursor sits up by the
@@ -31,6 +37,22 @@ export function ArtLayerImg({
 }) {
   const reduced = useReducedMotion();
   const isCursor = layer.role === "cursor" && animateCursor;
+
+  if (inView) {
+    return (
+      <motion.img
+        className="art-layer"
+        src={layer.src}
+        alt=""
+        aria-hidden
+        style={{ left: layer.x, top: layer.y, width: layer.w, height: layer.h }}
+        initial={{ opacity: 0, y: reduced ? 0 : 8 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={still({ duration: 0.5, ease: EASE_OUT, delay }, reduced)}
+      />
+    );
+  }
 
   return (
     <motion.img
