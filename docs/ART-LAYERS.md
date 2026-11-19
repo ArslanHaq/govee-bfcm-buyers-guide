@@ -42,6 +42,36 @@ Verified by rendering each page at 390x1180 @2x and diffing against the 4x
 export: 3.5-7.5% of pixels differ by more than 24/255, nearly all of it text
 anti-aliasing and photo detail.
 
+## Results 5 and 6: photo cycle (19 Nov 2026)
+
+The client made the photo on the two multi-product results cycle "like a
+GIF". In Figma this is a Motion timeline on new frames (result #5 495:162,
+result #6 495:298): stacked photo layers, shown one at a time.
+
+* **Timing** is read from Figma's own animated (MP4) export: a hard cut every
+  1.2s, looping (r5 2 photos = 2.4s, r6 3 photos = 3.6s). Nothing else on
+  the page moves.
+* **Photos.** r5: outdoor, indoor. r6: outdoor, indoor, Christmas room. The
+  layers above the first are transparent at rest, so a static export of them
+  is empty; each was rendered from its original image fill, with the crop
+  (scale and offset) fitted against the video frames. The indoor photo has
+  the same image and crop on both results and ships once
+  (`/art/result/photo-indoor.webp`). r6's Christmas photo is mirrored in
+  Figma. Every photo carries the window's 1.36px side outline.
+* **In the page**, `PhotoWindow` stacks all the photos and toggles which one
+  is visible, so cuts are instant and there is no GIF colour banding. With
+  Reduce Motion on, the first photo stays.
+* **Also changed on these frames:** r5's chip header reads "Your Product",
+  r6's reads "Best for" (and moved 6px right, 8px up); r5's lower stars moved
+  up 4px. All re-cut from 4x exports of the new frames.
+* **r6's two yellow sparkles** sit on the canvas above the frame rather than
+  inside it (layers 427:2399 and 427:2400), so no export includes them. They
+  were placed by registering a zoomed canvas capture against the frame, and
+  use the sparkle's own SVG export.
+
+Checked by rendering each page and each photo phase against the frame and the
+video: within video-compression noise (3.7-8.4/255 mean difference).
+
 ## How positions were derived
 
 The layer SVGs carry no coordinates, so every position is measured.

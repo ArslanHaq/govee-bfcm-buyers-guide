@@ -88,8 +88,9 @@ export const ART_LAYERS: Record<string, ArtLayer[]> = {
     { src: "/art/r5/Group 10879104.svg", role: "sticker", x: 267.75, y: 516.25, w: 116, h: 75 },
     { src: "/art/r5/Group 10879102.svg", role: "decor", x: 301, y: 323.25, w: 60, h: 64 },
     { src: "/art/r5/Cursor.svg", role: "cursor", x: 322.5, y: 182.25, w: 60, h: 73 },
-    // A smaller, mirrored copy of the top cluster: cut from the frame.
-    { src: "/art/r5/stars-lower.webp", role: "decor-low", x: 24, y: 650.25, w: 53, h: 56.5 },
+    // A smaller, mirrored copy of the top cluster: cut from the frame
+    // (re-cut 19 Nov, when the client moved it up 4px).
+    { src: "/art/r5/stars-lower.webp", role: "decor-low", x: 23.5, y: 646, w: 52.75, h: 57 },
   ],
   r6: [
     { src: "/art/r6/Group 10879086.svg", role: "badge", x: 0, y: 47, w: 114, h: 141 },
@@ -100,6 +101,12 @@ export const ART_LAYERS: Record<string, ArtLayer[]> = {
     { src: "/art/r6/chip-best.webp", role: "chip", x: 12.5, y: 430.75, w: 149, h: 74.75 },
     { src: "/art/r6/Group 10879105.svg", role: "sticker", x: 262.75, y: 523, w: 117, h: 83 },
     { src: "/art/r6/Cursor.svg", role: "cursor", x: 322.5, y: 182.25, w: 60, h: 73 },
+    // Two yellow sparkles added 19 Nov. In Figma they float on the canvas
+    // above the frame (layers 427:2399 / 427:2400) rather than inside it, so
+    // no export includes them; placed by registering a zoomed canvas capture
+    // against the frame. Same vector at two sizes.
+    { src: "/art/r6/sparkle.svg", role: "decor", x: 25.8, y: 324.4, w: 55.92, h: 55.92 },
+    { src: "/art/r6/sparkle.svg", role: "decor-low", x: 30.5, y: 655.9, w: 46.22, h: 46.22 },
   ],
 };
 // r4b is r4's page with its own photo and "Your Match" chip.
@@ -120,16 +127,31 @@ export const EXPLORE_LINK = {
 } as const;
 
 /**
- * Below the fold on each result: the photo inside the window, and the
+ * Below the fold on each result: the photo(s) inside the window, and the
  * "Your Match" chip that overlaps the window's edge. The window frame itself
  * is drawn by PhotoWindow.tsx in the result's accent colour.
+ *
+ * `photos` (client update 19 Nov): r5 and r6 recommend several products, so
+ * their window cycles through one photo per setting, like a GIF. Timing is
+ * taken from Figma's Motion export: a hard cut every 1.2s, looping. The
+ * indoor photo is the same image and crop on both; r6's Christmas photo is
+ * mirrored in Figma, and is shipped mirrored.
  */
-export const RESULT_LOWER: Record<string, { photo: string; match: ArtLayer }> = {
+export const RESULT_LOWER: Record<string, { photo: string; photos?: string[]; match: ArtLayer }> = {
   r1: { photo: "/art/r1/photo.webp", match: { src: "/art/r1/chip-match.webp", role: "match", x: 20.5, y: 854.75, w: 148.5, h: 74.75 } },
   r2: { photo: "/art/r2/photo.webp", match: { src: "/art/r2/chip-match.webp", role: "match", x: 240.5, y: 792, w: 130.5, h: 74.75 } },
   r3: { photo: "/art/r3/photo.webp", match: { src: "/art/r3/chip-match.webp", role: "match", x: 20, y: 776.75, w: 130.75, h: 74.75 } },
   r4: { photo: "/art/r4/photo.webp", match: { src: "/art/r4/chip-match.webp", role: "match", x: 8.5, y: 830.75, w: 130.5, h: 74.75 } },
   r4b: { photo: "/art/r4b/photo.webp", match: { src: "/art/r4b/chip-match.webp", role: "match", x: 22.5, y: 815.75, w: 125.75, h: 75 } },
-  r5: { photo: "/art/r5/photo.webp", match: { src: "/art/r5/chip-match.webp", role: "match", x: 179.25, y: 774.5, w: 201.5, h: 74.75 } },
-  r6: { photo: "/art/r6/photo.webp", match: { src: "/art/r6/chip-match.webp", role: "match", x: 172, y: 781, w: 202.75, h: 92.25 } },
+  // r5's chip header reads "Your Product", r6's "Best for" (19 Nov frames).
+  r5: {
+    photo: "/art/r5/photo.webp",
+    photos: ["/art/r5/photo.webp", "/art/result/photo-indoor.webp"],
+    match: { src: "/art/r5/chip-match.webp", role: "match", x: 179.25, y: 774.5, w: 201.5, h: 74.75 },
+  },
+  r6: {
+    photo: "/art/r6/photo.webp",
+    photos: ["/art/r6/photo.webp", "/art/result/photo-indoor.webp", "/art/r6/photo-xmas.webp"],
+    match: { src: "/art/r6/chip-match.webp", role: "match", x: 178.25, y: 773, w: 202.5, h: 92.25 },
+  },
 };
