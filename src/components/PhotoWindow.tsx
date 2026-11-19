@@ -1,6 +1,7 @@
 "use client";
 
-import { useId } from "react";
+import { useEffect, useId, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 /**
  * The browser-window frame around each result's photo (Figma group
@@ -40,17 +41,40 @@ function at(x: number, y: number, w: number, h: number): React.CSSProperties {
   return { position: "absolute", left: x, top: y, width: w, height: h, display: "block" };
 }
 
-export function PhotoWindow({ accent, photo, alt }: { accent: string; photo: string; alt: string }) {
+/** Hard cut between photos, as in the client's Figma Motion export. */
+const CYCLE_MS = 1200;
+
+export function PhotoWindow({ accent, photos, alt }: { accent: string; photos: string[]; alt: string }) {
   const id = useId().replace(/:/g, "");
+  const reduced = useReducedMotion();
+  const [shown, setShown] = useState(0);
+  const cycles = photos.length > 1 && !reduced;
+
+  useEffect(() => {
+    if (!cycles) return;
+    const t = window.setInterval(() => setShown((i) => (i + 1) % photos.length), CYCLE_MS);
+    return () => window.clearInterval(t);
+  }, [cycles, photos.length]);
+
   return (
     // Fills its parent, which ResultScreen places at PHOTO_WINDOW (so the
     // scroll-into-view reveal observes the window itself, not the page).
     <div className="photo-window" style={at(0, 0, PHOTO_WINDOW.w, PHOTO_WINDOW.h)}>
       {/* The photo runs from just under the title bar to the bottom bar. Its
           side borders are part of the image (they are the photo node's own
-          inside stroke in Figma). */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photo} alt={alt} style={at(0, 70.76, 308, 269.5)} />
+          inside stroke in Figma). Several photos are all loaded and stacked,
+          and only the current one is visible, so each cut is instant: a GIF
+          made of separate WebP frames, without GIF's 256-colour banding. */}
+      {photos.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt={i === 0 ? alt : ""}
+          aria-hidden={i === 0 ? undefined : true}
+          style={{ ...at(0, 70.76, 308, 269.5), visibility: i === (cycles ? shown : 0) ? "visible" : "hidden" }}
+        />
+      ))}
 
       <svg style={at(0, 0, 308.035, 71.6159)} viewBox="0 0 308.035 71.6159" aria-hidden>
         <defs>

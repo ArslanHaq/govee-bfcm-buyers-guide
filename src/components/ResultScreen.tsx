@@ -172,7 +172,7 @@ export function ResultScreen({ id }: { id: ResultId }) {
               >
                 <PhotoWindow
                   accent={result.ctaFill}
-                  photo={lower.photo}
+                  photos={lower.photos ?? [lower.photo]}
                   alt={`${result.products.join(" + ")} lighting a room`}
                 />
               </motion.div>

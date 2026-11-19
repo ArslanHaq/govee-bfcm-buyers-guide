@@ -53,6 +53,8 @@ photo), a photo of the lights in a real room inside a browser window, a
 the screen width (`--sw`) and scrolls inside `.result-screen`; html/body stay
 fixed so the browser-bar tinting keeps working. The window frame is drawn by
 `PhotoWindow.tsx` from Figma's own paths, in each result's accent colour.
+Results 5 and 6 recommend several products, so their photo cycles through one
+photo per setting, a hard cut every 1.2s, as in the client's Figma animation.
 
 ### Desktop
 
