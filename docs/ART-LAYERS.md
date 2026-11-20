@@ -42,6 +42,18 @@ Verified by rendering each page at 390x1180 @2x and diffing against the 4x
 export: 3.5-7.5% of pixels differ by more than 24/255, nearly all of it text
 anti-aliasing and photo detail.
 
+## 20 Nov 2026: start date and background grain
+
+* **STARTS NOV 20** (was 19) on the start screen and the desktop page. The
+  cover badge (`/art/cover/Group 10879108.svg`) is vector: "NOV" moved left one
+  grid step so the line stays centred, the "0" is the font's own "O" and the
+  "2" is assembled from the "9"'s blocks. On desktop the badge is baked into
+  `content.webp`; the date line was redrawn from the same vector, mapped onto
+  the desktop lettering from its ten glyph edges (max error 0.67px).
+* **"Pixelated" results** (client, r3 and r6): the result backgrounds are
+  film grain, and WebP at quality 78 smeared it into 4px blocks that a phone
+  enlarges ~3x. Re-encoded at 88 (`RESULT_QUALITY` in process-assets.mjs).
+
 ## Results 5 and 6: photo cycle (19 Nov 2026)
 
 The client made the photo on the two multi-product results cycle "like a

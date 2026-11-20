@@ -17,9 +17,12 @@ import { join } from "node:path";
 const TARGET_W = 780;   // 2x of 390
 const TARGET_H = 1440;  // 2x of 720
 const QUALITY = 72;
-// Result backgrounds are stored at the fill's native size (see below), so
-// they can afford a little more quality and still come in under 100 KB.
-const RESULT_QUALITY = 78;
+// Result backgrounds are stored at the fill's native size (see below), and
+// they are mostly film grain, which lossy WebP smears into 4px blocks: at 78
+// the client saw them as "pixelated" on phones (r3, r6), where the image is
+// enlarged ~3x. 88 keeps the grain (blockiness 1.10 -> 1.03, grain
+// correlation 0.69 -> 0.84 against the source) at ~110-170 KB each.
+const RESULT_QUALITY = 88;
 // Left edge of each result's crop, in the 1200px fill, where the frame does
 // not centre it. r2's fill is offset in Figma; the rest are centred.
 const RESULT_CROP_X = { r2: 560 };

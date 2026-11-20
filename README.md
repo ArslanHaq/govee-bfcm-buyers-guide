@@ -10,8 +10,10 @@ screen; each result is a 390×1180 page that scrolls (client design, 18 Nov).
 > **Offer:** **UP TO 40% OFF** on the start screen and the desktop page
 > (decided 18 Nov; the designs had 53% and 42%). The figures were redrawn in
 > the artwork's own type: Gotham Bold on the start screen, the pixel face on
-> desktop. The start date is the design's **STARTS NOV 19** (the brief said
-> Nov 13–14). Both live in `CAMPAIGN` in `src/lib/quiz.ts`.
+> desktop. **Start date: STARTS NOV 20** on both (client, 20 Nov; the designs
+> say Nov 19, the brief said Nov 13–14). Both figures were redrawn in the
+> badge's own pixel lettering: the "0" is the font's "O", the "2" is built from
+> the "9"'s blocks. Both live in `CAMPAIGN` in `src/lib/quiz.ts`.
 
 ## Why this is a separate repo
 
