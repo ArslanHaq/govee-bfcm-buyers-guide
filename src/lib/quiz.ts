@@ -290,7 +290,7 @@ export const CAMPAIGN = {
    */
   shopUrl: process.env.NEXT_PUBLIC_SHOP_URL ?? "https://us.govee.com/",
   startsLabel: "STARTS",
-  startsDate: "NOV 19",
+  startsDate: "NOV 20",
   discount: "UP TO 40% OFF",
   coverSubhead:
     "Not sure which lights are right for your home? We've got you!",

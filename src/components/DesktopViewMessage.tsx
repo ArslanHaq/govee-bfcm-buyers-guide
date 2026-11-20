@@ -10,7 +10,7 @@ import { CAMPAIGN } from "@/lib/quiz";
  * asking people to open it on their phone.
  *
  * The background is the frame's own image fill (covers the viewport). The
- * window, "Starts Nov 19" sticker and offer burst are one layer cut from a 2x
+ * window, "Starts Nov 20" sticker and offer burst are one layer cut from a 2x
  * export against that fill: their type is outlined in Figma, so there is no
  * live text to rebuild. The "Explore Govee" button is a real link laid
  * exactly over the drawn one.
