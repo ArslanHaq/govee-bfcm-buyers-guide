@@ -55,6 +55,14 @@ export function ResultScreen({ id }: { id: ResultId }) {
   useScrollTint(scroller, tint, TINT_STEP);
   const box = EXPLORE_LINK.box;
 
+  // QA link: `?screen=r5&at=photo` opens a result already scrolled to its
+  // photo, for checking the lower half on a device without touching it.
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el || new URLSearchParams(window.location.search).get("at") !== "photo") return;
+    el.scrollTo({ top: (PHOTO_WINDOW.y - 40) * (el.clientWidth / 390) });
+  }, []);
+
   // The Explore arrow bounces until the reader first scrolls the page.
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
