@@ -80,7 +80,9 @@ identical from the top on every screen and lets all the slack fall below the
 buttons, where the background simply continues.
 
 **Pixel fidelity.** The design is a fixed 390×720 canvas. `.stage` is that box
-scaled by a unitless `--s` set from JS (`Stage.tsx`) — CSS cannot divide two
+scaled by a unitless `--s` set from JS (`Stage.tsx`), applied with CSS `zoom`
+rather than `transform: scale()`: a transform made iOS enlarge a 390px
+rendering, which the client saw as "pixelated" (see docs/ART-LAYERS.md) — CSS cannot divide two
 lengths into the `<number>` `scale()` needs, and `min(100vw/390, …)` silently
 yields a length that makes the transform a no-op. Everything inside is authored
 in literal design pixels. The background lives *inside* the stage so artwork and

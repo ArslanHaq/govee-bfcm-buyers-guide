@@ -14,9 +14,11 @@ import { readdir, stat, unlink } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const TARGET_W = 780;   // 2x of 390
-const TARGET_H = 1440;  // 2x of 720
-const QUALITY = 72;
+// 3x of the 390x720 canvas. Was 2x, which a 3x iPhone enlarged by 1.5 and
+// blurred the backgrounds' grain (client: "pixelated", 20-22 Nov).
+const TARGET_W = 1170;
+const TARGET_H = 2160;
+const QUALITY = 80;
 // Result backgrounds are stored at the fill's native size (see below), and
 // they are mostly film grain, which lossy WebP smears into 4px blocks: at 78
 // the client saw them as "pixelated" on phones (r3, r6), where the image is

@@ -42,6 +42,42 @@ Verified by rendering each page at 390x1180 @2x and diffing against the 4x
 export: 3.5-7.5% of pixels differ by more than 24/255, nearly all of it text
 anti-aliasing and photo detail.
 
+## 22 Nov 2026: "pixelated" on iPhones, root causes
+
+Measured in the iOS 26.2 simulator (iPhone 17 Pro, 3x) against 4x Figma
+exports, region by region (high-frequency energy, ours / Figma):
+
+| | before | after |
+| --- | --- | --- |
+| result headline | 0.63 | 1.03-1.07 |
+| result illustration | 0.72 | 0.97-1.01 |
+| result background | 0.56 | 1.08-1.21 |
+| cover headline | (soft) | 1.07 |
+
+1. **The canvas was scaled with `transform: scale()`.** iOS Safari (and so
+   iOS Chrome) paints the 390px canvas and then enlarges the picture, so
+   every headline, illustration and button was resampled. The stage now
+   uses CSS `zoom`, which lays it out at its final size: everything is
+   drawn once at device resolution. At 390px wide nothing moves; at other
+   widths the alignment is unchanged to within one device pixel.
+2. **Raster art was 2x.** Product illustrations are now Figma's original
+   fills (3-4x, lossless WebP, no larger than before); window photos 3x;
+   cover and question backgrounds 3x (`TARGET_W/H` in process-assets.mjs).
+3. **Result backgrounds were smoothed.** Their grain is ~1 source pixel per
+   design pixel; Figma enlarges fills with hard pixels, browsers smooth them.
+   `.result-bg` now uses `image-rendering: pixelated`, like Figma.
+4. **Pixel-art seams.** Cursors, discount stickers and the date badge were
+   dozens of abutting shapes; anti-aliasing each edge left faint lines at
+   fractional scales. Merged into one path per colour.
+5. **Masks.** Headlines' white outlines used an SVG mask (Figma's
+   outside-stroke export); now drawn as a plain stroke under the fill,
+   identical at 4x, cheaper and cleaner to rasterise.
+6. **Answer dividers never showed** (any browser): `<hr>` has
+   `overflow: hidden`, which clipped the 1px rule. Fixed.
+7. **Desktop**: artwork lossless (was lossy q82, smaller now), background 2x.
+
+QA: `?screen=r5&at=photo` opens a result scrolled to its photo.
+
 ## 20 Nov 2026: start date and background grain
 
 * **STARTS NOV 20** (was 19) on the start screen and the desktop page. The

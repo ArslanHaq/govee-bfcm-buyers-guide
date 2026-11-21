@@ -130,17 +130,22 @@ body:has(.dv) .browser-edge {
 .stage {
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   width: calc(var(--frame-w) * 1px);
   height: calc(var(--frame-h) * 1px);
   /* Anchored to the TOP, not centred. Centring split the leftover height
      into equal bands above and below, so on a tall phone the composition
-     started ~60px down. Scaling from `top center` keeps the artwork
-     identical from the top on every screen and lets all the slack fall
-     below the buttons, where the background simply continues. */
-  margin-left: calc(var(--frame-w) * -0.5px);
-  transform: scale(var(--s));
-  transform-origin: top center;
+     started ~60px down. Anchoring at the top keeps the artwork identical
+     from the top on every screen and lets all the slack fall below the
+     buttons, where the background simply continues.
+     Scaled with `zoom`, not `transform: scale()`: a transform draws the
+     390px canvas and then resamples the picture, which softened every
+     headline and illustration on iPhones (measured ~10% less sharp than
+     Figma). `zoom` lays the canvas out at its final size, so text, SVG and
+     images are rasterised once, at full device resolution. */
+  zoom: var(--s);
   z-index: 1;
 }
 
@@ -329,6 +334,10 @@ body:has(.dv) .browser-edge {
   border: 0;
   margin: 0;
   position: relative;
+  /* Browsers give <hr> `overflow: hidden`, which clipped the rule below
+     (drawn just outside this zero-height box) on every browser: the
+     dividers between answers never showed. */
+  overflow: visible;
 }
 .answer-divider::after {
   content: "";
@@ -692,7 +701,7 @@ a.result-cta {
   display: none;
 }
 /* In-flow box that gives the scroller its height; the stage inside is
-   transformed, and transforms do not take up layout space. */
+   absolutely positioned, so it takes up no layout space of its own. */
 .result-page {
   position: relative;
   width: 100%;
@@ -701,9 +710,14 @@ a.result-cta {
 }
 .result-screen .stage {
   height: 1180px;
-  transform: scale(var(--sw));
+  zoom: var(--sw);
 }
-/* The background is part of the page here: it scrolls with the artwork. */
+/* The background is part of the page here: it scrolls with the artwork.
+   It is film grain at ~1 source pixel per design pixel, so a phone enlarges
+   it ~3x. Figma enlarges image fills with hard pixels (its 4x exports show
+   runs of identical pixels), which keeps the grain crisp; a browser's default
+   smoothing blurs it into soft blotches. `pixelated` scales it the way Figma
+   does. */
 .result-bg {
   position: absolute;
   left: 0;
@@ -711,6 +725,7 @@ a.result-cta {
   width: 390px;
   height: 1180px;
   display: block;
+  image-rendering: pixelated;
 }
 .result-screen .result-cta-slot {
   top: 1079px;
