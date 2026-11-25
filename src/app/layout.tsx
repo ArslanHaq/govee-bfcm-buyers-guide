@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { StageScale } from "@/components/Stage";
 import { BrowserTintEdges } from "@/components/BrowserTint";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Build Your Perfect Holiday Setup | Govee",
@@ -27,6 +28,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             before the app hydrates. */}
         <BrowserTintEdges />
         {children}
+        {/* Visitor counts in the Vercel dashboard (client request, 25 Nov).
+            Cookie-free; does nothing outside Vercel. */}
+        <Analytics />
       </body>
     </html>
   );

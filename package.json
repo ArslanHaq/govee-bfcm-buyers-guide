@@ -15,6 +15,7 @@
     "guard": "node scripts/guard-dev-server.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.18.1",
     "next": "^15.4.6",
     "react": "^19.0.0",
